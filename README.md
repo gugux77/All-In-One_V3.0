@@ -1,4 +1,9 @@
 # All-In-One_V3.0
+
+基于开源项目Switch-Fightstick-master https://github.com/progmem/Switch-Fightstick
+
+项目依赖LUFA库 请放置于/lib/目录下
+
 固件需要:
 
 ProMicro单片机(32U4芯片)
