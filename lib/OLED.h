@@ -1,3 +1,4 @@
+
 #include "Codetable.h"
 
 #define Brightness 0xCF
@@ -23,7 +24,7 @@ void IIC_Stop(void)
 	set_bit(PORTD, 4);
 }
 
-// Í¨¹ıI2C×ÜÏßĞ´Ò»¸ö×Ö½Ú
+// é€šè¿‡I2Cæ€»çº¿å†™ä¸€ä¸ªå­—èŠ‚
 void Write_IIC_Byte(char IIC_Byte)
 {
 	unsigned char i;
@@ -43,7 +44,7 @@ void Write_IIC_Byte(char IIC_Byte)
 	reset_bit(PORTD, 0);
 }
 
-//OLEDĞ´Êı¾İ
+//OLEDå†™æ•°æ®
 void OLED_WrDat(char IIC_Data)
 {
 	IIC_Start();
@@ -53,7 +54,7 @@ void OLED_WrDat(char IIC_Data)
 	IIC_Stop();
 }
 
-//OLEDĞ´ÃüÁî
+//OLEDå†™å‘½ä»¤
 void OLED_WrCmd(char IIC_Command)
 {
 	IIC_Start();
@@ -63,7 +64,7 @@ void OLED_WrCmd(char IIC_Command)
 	IIC_Stop();
 }
 
-//ÉèÖÃ×ø±ê
+//è®¾ç½®åæ ‡
 void OLED_Set_Pos(char x, char y)
 {
 	OLED_WrCmd(0xb0 + y);
@@ -71,7 +72,7 @@ void OLED_Set_Pos(char x, char y)
 	OLED_WrCmd((x & 0x0f) | 0x00);
 }
 
-//OLEDÈ«ÆÁ
+//OLEDå…¨å±
 void OLED_Fill(char bmp_dat)
 {
 	unsigned char y, x;
@@ -85,7 +86,7 @@ void OLED_Fill(char bmp_dat)
 	}
 }
 
-//OLED¸´Î»
+//OLEDå¤ä½
 void OLED_CLS(void)
 {
 	unsigned char y, x;
@@ -99,7 +100,7 @@ void OLED_CLS(void)
 	}
 }
 
-//OLED³õÊ¼»¯
+//OLEDåˆå§‹åŒ–
 void OLED_Init(void)
 {
 	cli();
@@ -140,7 +141,7 @@ void OLED_Init(void)
 	sei();
 }
 
-//ÏÔÊ¾6*8 ASCII×Ö·û´® ×ø±êx,y yÎªÒ³·¶Î§0~7
+//æ˜¾ç¤º6*8 ASCIIå­—ç¬¦ä¸² åæ ‡x,y yä¸ºé¡µèŒƒå›´0~7
 void OLED_P6x8Str(char x, char y, char ch[])
 {
 	unsigned char c = 0, i = 0, j = 0;
@@ -160,7 +161,7 @@ void OLED_P6x8Str(char x, char y, char ch[])
 	}
 }
 
-//ÏÔÊ¾8*16 ASCII×Ö·û´® ÏÔÊ¾µÄ×ø±êx,y yÎªÒ³·¶Î§0~7
+//æ˜¾ç¤º8*16 ASCIIå­—ç¬¦ä¸² æ˜¾ç¤ºçš„åæ ‡x,y yä¸ºé¡µèŒƒå›´0~7
 void OLED_P8x16Str(char x, char y, char ch[])
 {
 	unsigned char c = 0, i = 0, j = 0;
@@ -183,7 +184,7 @@ void OLED_P8x16Str(char x, char y, char ch[])
 	}
 }
 
-//ÏÔÊ¾16*16µãÕó ÏÔÊ¾µÄ×ø±êx,y yÎªÒ³·¶Î§0~7
+//æ˜¾ç¤º16*16ç‚¹é˜µ æ˜¾ç¤ºçš„åæ ‡x,y yä¸ºé¡µèŒƒå›´0~7
 void OLED_P16x16Ch(char x, char y, char N)
 {
 	unsigned char wm = 0;
@@ -203,7 +204,7 @@ void OLED_P16x16Ch(char x, char y, char N)
 }
 
 /*
-//ÏÔÊ¾ÏÔÊ¾BMPÍ¼Æ¬128¡Á64 ÆğÊ¼µã×ø±êxy xµÄ·¶Î§0~127 yÎªÒ³µÄ·¶Î§0~7
+//æ˜¾ç¤ºæ˜¾ç¤ºBMPå›¾ç‰‡128Ã—64 èµ·å§‹ç‚¹åæ ‡xy xçš„èŒƒå›´0~127 yä¸ºé¡µçš„èŒƒå›´0~7
 void Draw_BMP(unsigned char x0,unsigned char y0,unsigned char x1,unsigned char y1,unsigned char BMP[])
 {
 	unsigned int j=0;
