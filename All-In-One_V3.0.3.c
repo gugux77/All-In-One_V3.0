@@ -105,8 +105,9 @@ void PgmInit()
     delay(10);
   }
   delay(200);
-  OLED_P6x8Str(0, 6, "          ");
-  OLED_P6x8Str(0, 7, "  ");
+  OLED_P8x16Str(0, 6, "        ");
+  //OLED_P6x8Str(0, 6, "          ");
+  //OLED_P6x8Str(0, 7, "  ");
   //OLED_P6x8Str(48, 0, "  ");
   //OLED_P6x8Str(48, 1, "       ");
   OLED_P8x16Str(36, 1, "       ");
