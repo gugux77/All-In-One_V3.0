@@ -1,18 +1,21 @@
-
 //extern char AutoPause;
 extern char ScriptNum;
 extern signed char CycleNum;
-extern signed char BoxNum;
+extern int BoxNum;
 extern char InfUsedNum;
 extern long FrameNum;
 extern signed char SkipWaitNum;
-extern signed char LastFrameNum; 
+extern signed char LastFrameNum;
 extern int DriveWaitNum;
 extern int PasswordNum;
 extern long SizeofCollect;
+extern long SizeofHatch6;
 extern long SizeofHatch11;
+extern long SizeofHatch16;
 extern long SizeofHatch21;
+extern long SizeofHatch26;
 extern long SizeofHatch31;
+extern long SizeofHatch36;
 extern long SizeofHatch41;
 extern long SizeofRelease;
 extern long SizeofSkip;
@@ -23,10 +26,7 @@ void PgmStart(void);
 void CollectAndHatch(void);
 void Collecting(void);
 void Hatching(void);
-void Hatching11(void);
-void Hatching21(void);
-void Hatching31(void);
-void Hatching41(void);
+void HatchOpration(void);
 void Releasing(void);
 void Skipping(void);
 void SkipLastFrame(void);
@@ -40,11 +40,11 @@ void CollectBerry(void);
 void HeadwearBattle(void);
 void PokeJob(void);
 
-/////////////////////////Ê®°ÂùóÂå∫/////////////////////////
+/////////////////////////ƒ£øÈ«¯/////////////////////////
 
-//ÊåÅÁª≠Êó∂Èó¥40Á∫¶Á≠â‰∫é1Áßí
+//≥÷–¯ ±º‰40‘ºµ»”⁄1√Î
 
-//ÂèñËõãÁßªÂä®
+//»°µ∞“∆∂Ø
 static const command CollectMove[] PROGMEM = {
     {UPRIGHT, 2},
     {UPLEFT, 2},
@@ -57,7 +57,7 @@ static const command CollectMove[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂèñËõãÂØπËØù
+//»°µ∞∂‘ª∞
 static const command GetEgg[] PROGMEM = {
     {UPRIGHT, 5},
     {PAUSE, 5},
@@ -74,7 +74,7 @@ static const command GetEgg[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂèñËõãÂ≠µËõãËøáÊ∏°
+//»°µ∞∑ıµ∞π˝∂…
 static const command CollectToHatch[] PROGMEM = {
     {DOWN, 10},
     {PAUSE, 5},
@@ -93,7 +93,7 @@ static const command CollectToHatch[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 20},
+    {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -102,12 +102,12 @@ static const command CollectToHatch[] PROGMEM = {
     {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
+    {A, 2},
+    {PAUSE, 60},
     {A, 2},
     {PAUSE, 50},
     {A, 2},
     {PAUSE, 30},
-    {A, 2},
-    {PAUSE, 20},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -116,12 +116,12 @@ static const command CollectToHatch[] PROGMEM = {
     {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
+    {A, 2},
+    {PAUSE, 60},
     {A, 2},
     {PAUSE, 50},
     {A, 2},
     {PAUSE, 30},
-    {A, 2},
-    {PAUSE, 20},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -130,12 +130,12 @@ static const command CollectToHatch[] PROGMEM = {
     {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
+    {A, 2},
+    {PAUSE, 60},
     {A, 2},
     {PAUSE, 50},
     {A, 2},
     {PAUSE, 30},
-    {A, 2},
-    {PAUSE, 20},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -144,12 +144,12 @@ static const command CollectToHatch[] PROGMEM = {
     {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
+    {A, 2},
+    {PAUSE, 60},
     {A, 2},
     {PAUSE, 50},
     {A, 2},
     {PAUSE, 30},
-    {A, 2},
-    {PAUSE, 20},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -158,10 +158,10 @@ static const command CollectToHatch[] PROGMEM = {
     {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
+    {A, 2},
+    {PAUSE, 60},
     {A, 2},
     {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 30},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -171,7 +171,7 @@ static const command CollectToHatch[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Â≠µËõãÂ§ç‰Ωç
+//∑ıµ∞∏¥Œª
 static const command HatchReset[] PROGMEM = {
     {DOWNLEFT, 10},
     {PAUSE, 5},
@@ -182,7 +182,7 @@ static const command HatchReset[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Â≠µËõãÁßªÂä®
+//∑ıµ∞“∆∂Ø
 static const command HatchMove[] PROGMEM = {
     {DOWNLEFT, 2},
     {DOWNRIGHT, 2},
@@ -199,18 +199,44 @@ static const command HatchMove[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Â≠µËõã11Âë®ÊúüÊúÄÂêé‰∏ÄÊ¨°ÁßªÂä®
-static const command LastMove11[] PROGMEM = {
+//∑ıµ∞6÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove6[] PROGMEM = {
     {DOWNLEFT, 2},
     {DOWNRIGHT, 2},
     {RIGHT, 200},
     {RIGHT, 200},
     {RIGHT, 100},
     {PAUSE, 5},
+    {DOWNRIGHT, 2},
+    {DOWNLEFT, 2},
+    {LEFT, 200},
+    {LEFT, 200},
+    {LEFT, 50},
+    {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//Â≠µËõã21Âë®ÊúüÊúÄÂêé‰∏ÄÊ¨°ÁßªÂä®
+//∑ıµ∞11÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove11[] PROGMEM = {
+    {DOWNLEFT, 2},
+    {DOWNRIGHT, 2},
+    {RIGHT, 200},
+    {RIGHT, 200},
+    {RIGHT, 50},
+    {PAUSE, 5},
+    {SCRIPT_END, 0},
+};
+
+//∑ıµ∞16÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove16[] PROGMEM = {
+    {DOWNLEFT, 2},
+    {DOWNRIGHT, 2},
+    {RIGHT, 100},
+    {PAUSE, 5},
+    {SCRIPT_END, 0},
+};
+
+//∑ıµ∞21÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
 static const command LastMove21[] PROGMEM = {
     {DOWNLEFT, 2},
     {DOWNRIGHT, 2},
@@ -226,41 +252,68 @@ static const command LastMove21[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Â≠µËõã31Âë®ÊúüÊúÄÂêé‰∏ÄÊ¨°ÁßªÂä®
-static const command LastMove31[] PROGMEM = {
+//∑ıµ∞26÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove26[] PROGMEM = {
     {DOWNLEFT, 2},
     {DOWNRIGHT, 2},
     {RIGHT, 200},
+    {RIGHT, 200},
+    {RIGHT, 50},
     {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//Â≠µËõã41Âë®ÊúüÊúÄÂêé‰∏ÄÊ¨°ÁßªÂä®
-static const command LastMove41[] PROGMEM = {
+//∑ıµ∞31÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove31[] PROGMEM = {
+    {DOWNLEFT, 2},
+    {DOWNRIGHT, 2},
+    {RIGHT, 150},
+    {PAUSE, 5},
+    {SCRIPT_END, 0},
+};
+
+//∑ıµ∞36÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove36[] PROGMEM = {
     {DOWNLEFT, 2},
     {DOWNRIGHT, 2},
     {RIGHT, 200},
     {RIGHT, 200},
     {RIGHT, 100},
     {PAUSE, 5},
+    {DOWNRIGHT, 2},
+    {DOWNLEFT, 2},
+    {LEFT, 200},
+    {LEFT, 100},
+    {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//Âá∫ËõãÂä®Áîª
+//∑ıµ∞41÷‹∆⁄◊Ó∫Û“ª¥Œ“∆∂Ø
+static const command LastMove41[] PROGMEM = {
+    {DOWNLEFT, 2},
+    {DOWNRIGHT, 2},
+    {RIGHT, 200},
+    {RIGHT, 200},
+    {RIGHT, 150},
+    {PAUSE, 5},
+    {SCRIPT_END, 0},
+};
+
+//≥ˆµ∞∂Øª≠
 static const command Hatched[] PROGMEM = {
-    {DOWNRIGHT, 30},
+    {DOWNRIGHT, 50},
     {PAUSE, 5},
     {B, 2},
     {PAUSE, 200},
     {PAUSE, 200},
     {PAUSE, 200},
-    {PAUSE, 120},
+    {PAUSE, 130},
     {B, 2},
-    {PAUSE, 120},
+    {PAUSE, 150},
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú1
+//∫–◊”≤Ÿ◊˜1
 static const command BoxOperation1[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -277,13 +330,13 @@ static const command BoxOperation1[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -293,7 +346,7 @@ static const command BoxOperation1[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú2
+//∫–◊”≤Ÿ◊˜2
 static const command BoxOperation2[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -316,13 +369,13 @@ static const command BoxOperation2[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {A, 2},
@@ -330,7 +383,7 @@ static const command BoxOperation2[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {LEFT, 2},
     {PAUSE, 5},
     {LEFT, 2},
@@ -338,7 +391,7 @@ static const command BoxOperation2[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -348,7 +401,7 @@ static const command BoxOperation2[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú3
+//∫–◊”≤Ÿ◊˜3
 static const command BoxOperation3[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -371,7 +424,7 @@ static const command BoxOperation3[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {RIGHT, 2},
@@ -379,7 +432,7 @@ static const command BoxOperation3[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {A, 2},
@@ -387,7 +440,7 @@ static const command BoxOperation3[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {LEFT, 2},
     {PAUSE, 5},
     {LEFT, 2},
@@ -397,7 +450,7 @@ static const command BoxOperation3[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -407,7 +460,7 @@ static const command BoxOperation3[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú4
+//∫–◊”≤Ÿ◊˜4
 static const command BoxOperation4[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -430,7 +483,7 @@ static const command BoxOperation4[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {RIGHT, 2},
@@ -440,7 +493,7 @@ static const command BoxOperation4[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {A, 2},
@@ -448,7 +501,7 @@ static const command BoxOperation4[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {RIGHT, 2},
@@ -458,7 +511,7 @@ static const command BoxOperation4[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -468,7 +521,7 @@ static const command BoxOperation4[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú5
+//∫–◊”≤Ÿ◊˜5
 static const command BoxOperation5[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -491,7 +544,7 @@ static const command BoxOperation5[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {LEFT, 2},
     {PAUSE, 5},
     {LEFT, 2},
@@ -501,7 +554,7 @@ static const command BoxOperation5[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {A, 2},
@@ -509,7 +562,7 @@ static const command BoxOperation5[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {RIGHT, 2},
@@ -517,7 +570,7 @@ static const command BoxOperation5[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -527,7 +580,7 @@ static const command BoxOperation5[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú6
+//∫–◊”≤Ÿ◊˜6
 static const command BoxOperation6[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -550,7 +603,7 @@ static const command BoxOperation6[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {LEFT, 2},
     {PAUSE, 5},
     {LEFT, 2},
@@ -558,7 +611,7 @@ static const command BoxOperation6[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {A, 2},
@@ -566,13 +619,13 @@ static const command BoxOperation6[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {RIGHT, 2},
     {PAUSE, 5},
     {DOWN, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {B, 2},
     {PAUSE, 80},
     {B, 2},
@@ -582,7 +635,7 @@ static const command BoxOperation6[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁõíÂ≠êÊìç‰Ωú7
+//∫–◊”≤Ÿ◊˜7
 static const command BoxOperation7[] PROGMEM = {
     {X, 2},
     {PAUSE, 50},
@@ -605,13 +658,13 @@ static const command BoxOperation7[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {LEFT, 2},
     {PAUSE, 5},
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 5},
+    {PAUSE, 10},
     {R, 2},
     {PAUSE, 30},
     {B, 2},
@@ -623,10 +676,10 @@ static const command BoxOperation7[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÊîæÁîüÂπ∂Âêë‰∏ãÁßªÂä®
+//∑≈…˙≤¢œÚœ¬“∆∂Ø
 static const command ReleaseDown[] PROGMEM = {
     {A, 2},
-    {PAUSE, 20},
+    {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -636,18 +689,18 @@ static const command ReleaseDown[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 50},
+    {PAUSE, 60},
     {A, 2},
-    {PAUSE, 10},
+    {PAUSE, 20},
     {DOWN, 2},
     {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//ÊîæÁîüÂπ∂Âêë‰∏äÁßªÂä®
+//∑≈…˙≤¢œÚ…œ“∆∂Ø
 static const command ReleaseUP[] PROGMEM = {
     {A, 2},
-    {PAUSE, 20},
+    {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -657,18 +710,18 @@ static const command ReleaseUP[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 50},
+    {PAUSE, 60},
     {A, 2},
-    {PAUSE, 10},
+    {PAUSE, 20},
     {UP, 2},
     {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//ÊîæÁîüÂπ∂ÂêëÂè≥ÁßªÂä®
+//∑≈…˙≤¢œÚ”““∆∂Ø
 static const command ReleaseRight[] PROGMEM = {
-    {A, 2},
-    {PAUSE, 20},
+   {A, 2},
+    {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -678,18 +731,18 @@ static const command ReleaseRight[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 50},
+    {PAUSE, 60},
     {A, 2},
-    {PAUSE, 10},
+    {PAUSE, 20},
     {RIGHT, 2},
     {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//ÊîæÁîüÂπ∂ÂàáÊç¢‰∏ã‰∏ÄÁÆ±
+//∑≈…˙≤¢«–ªªœ¬“ªœ‰
 static const command ReleaseReset[] PROGMEM = {
     {A, 2},
-    {PAUSE, 20},
+    {PAUSE, 30},
     {UP, 2},
     {PAUSE, 5},
     {UP, 2},
@@ -699,9 +752,9 @@ static const command ReleaseReset[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
     {A, 2},
-    {PAUSE, 50},
+    {PAUSE, 60},
     {A, 2},
-    {PAUSE, 10},
+    {PAUSE, 20},
     {LEFT, 2},
     {PAUSE, 5},
     {LEFT, 2},
@@ -717,7 +770,7 @@ static const command ReleaseReset[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ËΩ¨Âà∞ËÆæÁΩÆ
+//◊™µΩ…Ë÷√
 static const command GotoSettings[] PROGMEM = {
     {HOME, 2},
     {PAUSE, 50},
@@ -768,7 +821,7 @@ static const command GotoSettings[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Ë∑≥Âõû‰∏ÄÂ∏ß
+//Ã¯ªÿ“ª÷°
 static const command SkipBack[] PROGMEM = {
     {A, 2},
     {PAUSE, 5},
@@ -791,7 +844,7 @@ static const command SkipBack[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Ë∑≥Â∏ß
+//Ã¯÷°
 static const command Skip[] PROGMEM = {
     {A, 2},
     {PAUSE, 5},
@@ -814,7 +867,7 @@ static const command Skip[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂõûÂà∞Ê∏∏Êàè
+//ªÿµΩ”Œœ∑
 static const command GotoGame[] PROGMEM = {
     {HOME, 2},
     {PAUSE, 50},
@@ -823,7 +876,7 @@ static const command GotoGame[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÈáçÂêØÊ∏∏Êàè
+//÷ÿ∆Ù”Œœ∑
 static const command RestartGame[] PROGMEM = {
     {HOME, 2},
     {PAUSE, 50},
@@ -840,11 +893,11 @@ static const command RestartGame[] PROGMEM = {
     {PAUSE, 100},
     {A, 2},
     {PAUSE, 200},
-    {PAUSE, 150},
+    {PAUSE, 200},
     {SCRIPT_END, 0},
 };
 
-//ËøõÊãõÂãüÁïåÈù¢
+//Ω¯’–ƒºΩÁ√Ê
 static const command Recruit[] PROGMEM = {
     {A, 2},
     {PAUSE, 50},
@@ -853,7 +906,7 @@ static const command Recruit[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Á¨¨‰∫åÊ¨°ÊãõÂãü
+//µ⁄∂˛¥Œ’–ƒº
 static const command NextRecruit[] PROGMEM = {
     {B, 2},
     {PAUSE, 30},
@@ -861,16 +914,16 @@ static const command NextRecruit[] PROGMEM = {
     {PAUSE, 200},
     {A, 2},
     {PAUSE, 30},
-    {A, 2},
+    {B, 2},
     {PAUSE, 30},
-    {A, 2},
+    {B, 2},
     {PAUSE, 50},
     {A, 2},
     {PAUSE, 120},
     {SCRIPT_END, 0},
 };
 
-//ÈÄÄÂá∫ÊãõÂãüÁïåÈù¢
+//ÕÀ≥ˆ’–ƒºΩÁ√Ê
 static const command ExitRecruit[] PROGMEM = {
     {B, 2},
     {PAUSE, 30},
@@ -879,7 +932,7 @@ static const command ExitRecruit[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ËÅîÁΩë
+//¡™Õ¯
 static const command Connect[] PROGMEM = {
     {Y, 2},
     {PAUSE, 50},
@@ -896,7 +949,7 @@ static const command Connect[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂºÄËΩ¶ÂáÜÂ§á
+//ø™≥µ◊º±∏
 static const command ReadyToDrive[] PROGMEM = {
     {A, 2},
     {PAUSE, 200},
@@ -910,7 +963,7 @@ static const command ReadyToDrive[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å0
+//√‹¬Î0
 static const command Password0[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
@@ -925,7 +978,7 @@ static const command Password0[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å1
+//√‹¬Î1
 static const command Password1[] PROGMEM = {
     {LEFT, 2},
     {PAUSE, 5},
@@ -940,7 +993,7 @@ static const command Password1[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å2
+//√‹¬Î2
 static const command Password2[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
@@ -951,7 +1004,7 @@ static const command Password2[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å3
+//√‹¬Î3
 static const command Password3[] PROGMEM = {
     {RIGHT, 2},
     {PAUSE, 5},
@@ -966,7 +1019,7 @@ static const command Password3[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å4
+//√‹¬Î4
 static const command Password4[] PROGMEM = {
     {LEFT, 2},
     {PAUSE, 5},
@@ -977,14 +1030,14 @@ static const command Password4[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å5
+//√‹¬Î5
 static const command Password5[] PROGMEM = {
     {A, 2},
     {PAUSE, 5},
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å6
+//√‹¬Î6
 static const command Password6[] PROGMEM = {
     {RIGHT, 2},
     {PAUSE, 5},
@@ -995,7 +1048,7 @@ static const command Password6[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å7
+//√‹¬Î7
 static const command Password7[] PROGMEM = {
     {LEFT, 2},
     {PAUSE, 5},
@@ -1010,7 +1063,7 @@ static const command Password7[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å8
+//√‹¬Î8
 static const command Password8[] PROGMEM = {
     {DOWN, 2},
     {PAUSE, 5},
@@ -1021,7 +1074,7 @@ static const command Password8[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂØÜÁ†Å9
+//√‹¬Î9
 static const command Password9[] PROGMEM = {
     {RIGHT, 2},
     {PAUSE, 5},
@@ -1036,7 +1089,7 @@ static const command Password9[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//Á≠âÂæÖÁé©ÂÆ∂
+//µ»¥˝ÕÊº“
 static const command DriveWait[] PROGMEM = {
     {PLUS, 2},
     {PAUSE, 60},
@@ -1047,7 +1100,7 @@ static const command DriveWait[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂºÄËΩ¶
+//ø™≥µ
 static const command StartDrive[] PROGMEM = {
     {UP, 2},
     {PAUSE, 5},
@@ -1079,7 +1132,7 @@ static const command StartDrive[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//È¢ÜÂèñÁì¶Áâπ
+//¡Ï»°ÕﬂÃÿ
 static const command GetWatt[] PROGMEM = {
     {A, 2},
     {PAUSE, 30},
@@ -1092,7 +1145,7 @@ static const command GetWatt[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂÆùÂèØÂ∏ÆÂ∏ÆÂøôÂà∑Êñ∞
+//±¶ø…∞Ô∞Ô√¶À¢–¬
 static const command RefreshJob[] PROGMEM = {
     {A, 2},
     {PAUSE, 30},
@@ -1111,7 +1164,7 @@ static const command RefreshJob[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ËøõÂÖ•‰ªªÂä°
+//Ω¯»Î»ŒŒÒ
 static const command StartJob[] PROGMEM = {
     {A, 2},
     {PAUSE, 30},
@@ -1149,7 +1202,7 @@ static const command StartJob[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÁªìÊùü‰ªªÂä°
+//Ω· ¯»ŒŒÒ
 static const command EndJob[] PROGMEM = {
     {A, 2},
     {PAUSE, 30},
@@ -1200,153 +1253,161 @@ static const command EndJob[] PROGMEM = {
     {SCRIPT_END, 0},
 };
 
-//ÂíñÂï°ÂéÖÊàòÊñó
+//øß∑»Ã¸’Ω∂∑
 static const command Battle[] PROGMEM = {
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ DOWN, 2 },
-	{ PAUSE,  30 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  150 },
-	{ B, 2 },
-	{ PAUSE,  200 },
-    { PAUSE,  200 },
-    { PAUSE,  200 },
-    { PAUSE,  200 },
-	{ UP, 50 },
-	{ PAUSE,  30 },
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ UP, 50 },
-	{ PAUSE,  30 },
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ UP, 50 },
-	{ PAUSE,  30 },
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ UP, 50 },
-	{ PAUSE,  30 },
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ UP, 50 },
-	{ PAUSE,  30 },
-	{ A, 2 },
-	{ PAUSE,  50 },
-	{ UP, 50 },
-	{ PAUSE,  30 },
-	{ A, 2 },
-	{ PAUSE,  200 },
-    { PAUSE,  200 },
-    { PAUSE,  100 },
-	{ B, 2 },
-	{ PAUSE,  200 },
-    { PAUSE,  200 },
-    { PAUSE,  100 },
-	{ B, 2 },
-	{ PAUSE,  200 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  200 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  200 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{ B, 2 },
-	{ PAUSE,  50 },
-	{SCRIPT_END, 0},
+    {A, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {A, 2},
+    {PAUSE, 50},
+    {DOWN, 2},
+    {PAUSE, 30},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 150},
+    {B, 2},
+    {PAUSE, 200},
+    {PAUSE, 200},
+    {PAUSE, 200},
+    {PAUSE, 200},
+    {UP, 50},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 50},
+    {UP, 50},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 50},
+    {UP, 50},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 50},
+    {UP, 50},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 50},
+    {UP, 50},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 50},
+    {UP, 50},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 200},
+    {PAUSE, 200},
+    {PAUSE, 100},
+    {B, 2},
+    {PAUSE, 200},
+    {PAUSE, 200},
+    {PAUSE, 100},
+    {B, 2},
+    {PAUSE, 200},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 200},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 200},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {B, 2},
+    {PAUSE, 50},
+    {SCRIPT_END, 0},
 };
 
-//ÂÆùÂèØÊ¢¶‰∏≠ÂøÉ
+//±¶ø…√Œ÷––ƒ
 static const command GotoCenter[] PROGMEM = {
     {DOWN, 80},
-	{PAUSE,120},
-	{X, 2},
-	{PAUSE,50},
-	{A, 2},
-	{PAUSE,120},
-	{A, 2},
-	{PAUSE,50},
-	{A, 2},
-	{PAUSE,200},
-	{UP, 50},
-	{PAUSE,120},
-	{UP, 80},
-	{PAUSE,30},
-	{A, 2},
-	{PAUSE,30},
-	{A, 2},
-	{PAUSE,30},
-	{A, 2},
-	{PAUSE,30},
-	{A, 2},
-	{PAUSE,200},
-	{PAUSE,200},
-	{A, 2},
-	{PAUSE,60},
-	{A, 2},
-	{PAUSE,30},
-	{DOWN, 80},
-	{PAUSE,120},
-	{SCRIPT_END, 0},
+    {PAUSE, 120},
+    {X, 2},
+    {PAUSE, 50},
+    {A, 2},
+    {PAUSE, 120},
+    {A, 2},
+    {PAUSE, 50},
+    {A, 2},
+    {PAUSE, 200},
+    {UP, 50},
+    {PAUSE, 120},
+    {UP, 80},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 30},
+    {A, 2},
+    {PAUSE, 200},
+    {PAUSE, 200},
+    {A, 2},
+    {PAUSE, 60},
+    {A, 2},
+    {PAUSE, 30},
+    {DOWN, 80},
+    {PAUSE, 120},
+    {SCRIPT_END, 0},
 };
 
-//ÂõûÂà∞È§êÂéÖ
+//ªÿµΩ≤ÕÃ¸
 static const command GoBack[] PROGMEM = {
-	{ RIGHT, 30 },
-	{ PAUSE,  30 },
-	{ UP, 135 },
-	{ PAUSE,  30 },
-	{ LEFT, 60 },
-	{ PAUSE,  10 },
-	{ UP, 10 },
-	{ PAUSE,  10 },
-	{ LEFT, 10 },
-	{ PAUSE,  120 },
-	{ UP, 80 },
-	{ PAUSE,  50 },
-	{SCRIPT_END, 0},
+    {RIGHT, 30},
+    {PAUSE, 30},
+    {UP, 135},
+    {PAUSE, 30},
+    {LEFT, 60},
+    {PAUSE, 10},
+    {UP, 10},
+    {PAUSE, 10},
+    {LEFT, 10},
+    {PAUSE, 120},
+    {UP, 80},
+    {PAUSE, 50},
+    {SCRIPT_END, 0},
 };
 
-//Á≠âÂæÖ5Áßí
+//µ»¥˝5√Î
 static const command PAUSE5[] PROGMEM = {
     {PAUSE, 200},
     {SCRIPT_END, 0},
 };
-/////////////////////////Á®ãÂ∫èÂå∫/////////////////////////
 
-//RunScript(Ê®°ÂùóÂêç,ÊâßË°åÊ¨°Êï∞)
-//RunStep(Âçï‰∏™Êìç‰Ωú,ÊåÅÁª≠Êó∂Èó¥) ÊåÅÁª≠Êó∂Èó¥40Á∫¶Á≠â‰∫é‰∏ÄÁßí
-//LOOP_START(X) LOOP_END ‰πãÈó¥ÁöÑ‰ª£Á†ÅÂæ™ÁéØXÊ¨°ÂêéÁªßÁª≠ X=0‰∏∫Êó†ÈôêÂæ™ÁéØ
-//PROGRAM_END Á®ãÂ∫èÁªìÊùüÂêéËá™Âä®ÂÅúÊ≠¢ Â¶ÇÊûú‰∏çÂÜô ÁªìÊùüÂêé‰ºöÈáçÂ§çÊâßË°å‰∏ãÂéª
+//Õ¨≤Ω
+static const command Sync[] PROGMEM = {
+    {LCLICK, 2},
+    {PAUSE, 10},
+    {SCRIPT_END, 0},
+};
+
+/////////////////////////≥Ã–Ú«¯/////////////////////////
+
+//RunScript(ƒ£øÈ√˚,÷¥––¥Œ ˝)
+//RunStep(µ•∏ˆ≤Ÿ◊˜,≥÷–¯ ±º‰) ≥÷–¯ ±º‰40‘ºµ»”⁄“ª√Î
+//LOOP_START(X) LOOP_END ÷Æº‰µƒ¥˙¬Î—≠ª∑X¥Œ∫ÛºÃ–¯ X=0Œ™Œﬁœﬁ—≠ª∑
+//PROGRAM_END ≥Ã–ÚΩ· ¯∫Û◊‘∂ØÕ£÷π »Áπ˚≤ª–¥ Ω· ¯∫Ûª·÷ÿ∏¥÷¥––œ¬»•
 
 void PgmStart()
 {
     Stopping = 0;
-
+    RunScript(Sync, 3);
     switch (ScriptNum)
     {
     case 1:
@@ -1381,58 +1442,54 @@ void PgmStart()
     }
 }
 
-//ÂèñËõãÂπ∂Â≠µÂåñ(420‰∏™Â∑¶Âè≥&21Âë®Êúü)
+//»°µ∞≤¢∑ıªØ
 void CollectAndHatch()
 {
     switch (CycleNum)
     {
+    case 6:
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch6 * BoxNum + GetDuration(CollectToHatch);
+        break;
     case 11:
-        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch11 * BoxNum + GetDuration(CollectToHatch) + GetDuration(ReleaseDown) * 5 + 246;
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch11 * BoxNum + GetDuration(CollectToHatch);
+        break;
+    case 16:
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch16 * BoxNum + GetDuration(CollectToHatch);
         break;
     case 21:
-        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch21 * BoxNum + GetDuration(CollectToHatch) + GetDuration(ReleaseDown) * 5 + 246;
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch21 * BoxNum + GetDuration(CollectToHatch);
+        break;
+    case 26:
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch26 * BoxNum + GetDuration(CollectToHatch);
         break;
     case 31:
-        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch31 * BoxNum + GetDuration(CollectToHatch) + GetDuration(ReleaseDown) * 5 + 246;
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch31 * BoxNum + GetDuration(CollectToHatch);
+        break;
+    case 36:
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch36 * BoxNum + GetDuration(CollectToHatch);
         break;
     case 41:
-        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch41 * BoxNum + GetDuration(CollectToHatch) + GetDuration(ReleaseDown) * 5 + 246;
+        SizeofPgm = SizeofCollect * BoxNum * 43 + SizeofHatch41 * BoxNum + GetDuration(CollectToHatch);
         break;
     default:
         break;
     }
-    //ÂèñËõã ÊàêÂäüÁéáÁ∫¶70%
+    //»°µ∞ ≥…π¶¬ ‘º70%
     LOOP_START((BoxNum * 43))
     RunScript(CollectMove, 3);
     RunScript(GetEgg, 1);
     LOOP_END
-    //ËøáÊ∏°Êìç‰Ωú
+    //π˝∂…≤Ÿ◊˜
     RunScript(CollectToHatch, 1);
-    //Â≠µËõã
+    //∑ıµ∞
     LOOP_START(BoxNum)
-    switch (CycleNum)
-    {
-    case 11:
-        Hatching11();
-        break;
-    case 21:
-        Hatching21();
-        break;
-    case 31:
-        Hatching31();
-        break;
-    case 41:
-        Hatching41();
-        break;
-    default:
-        break;
-    }
+    HatchOperation();
     LOOP_END
     PROGRAM_END
 }
 
 /*
-//ÂèñËõãÂπ∂Â≠µÂåñ(420‰∏™Â∑¶Âè≥&41Âë®Êúü)
+//»°µ∞≤¢∑ıªØ(420∏ˆ◊Û”“&41÷‹∆⁄)
 void CollectAndHatch41()
 {
 LOOP_START(600)
@@ -1453,7 +1510,7 @@ PROGRAM_END
 }
 */
 
-//ÂèñËõã
+//»°µ∞
 void Collecting()
 {
     SizeofPgm = SizeofCollect * BoxNum * 43;
@@ -1464,180 +1521,115 @@ void Collecting()
     PROGRAM_END
 }
 
-//Â≠µËõã
+//∑ıµ∞
 void Hatching()
 {
-    LOOP_START(BoxNum)
     switch (CycleNum)
     {
+    case 6:
+        SizeofPgm = SizeofHatch6 * BoxNum;
+        break;
     case 11:
         SizeofPgm = SizeofHatch11 * BoxNum;
-        Hatching11();
+        break;
+    case 16:
+        SizeofPgm = SizeofHatch16 * BoxNum;
         break;
     case 21:
         SizeofPgm = SizeofHatch21 * BoxNum;
-        Hatching21();
+        break;
+    case 26:
+        SizeofPgm = SizeofHatch26 * BoxNum;
         break;
     case 31:
         SizeofPgm = SizeofHatch31 * BoxNum;
-        Hatching31();
+        break;
+    case 36:
+        SizeofPgm = SizeofHatch36 * BoxNum;
         break;
     case 41:
         SizeofPgm = SizeofHatch41 * BoxNum;
-        Hatching41();
         break;
     default:
         break;
     }
+    LOOP_START(BoxNum)
+    HatchOperation();
     LOOP_END
     PROGRAM_END
 }
 
-//Â≠µËõã11Âë®Êúü
-void Hatching11()
+//∑ıµ∞≤Ÿ◊˜
+void HatchOperation()
 {
+    char num = 2;
     RunScript(BoxOperation1, 1);
-    RunScript(HatchMove, 1);
-    RunScript(LastMove11, 1);
+    LOOP_START(6)
+    switch (CycleNum)
+    {
+    case 6:
+        RunScript(LastMove6, 1);
+        break;
+    case 11:
+        RunScript(HatchMove, 1);
+        RunScript(LastMove11, 1);
+        break;
+    case 16:
+        RunScript(HatchMove, 2);
+        RunScript(LastMove16, 1);
+        break;
+    case 21:
+        RunScript(HatchMove, 2);
+        RunScript(LastMove21, 1);
+        break;
+    case 26:
+        RunScript(HatchMove, 3);
+        RunScript(LastMove26, 1);
+        break;
+    case 31:
+        RunScript(HatchMove, 4);
+        RunScript(LastMove31, 1);
+        break;
+    case 36:
+        RunScript(HatchMove, 4);
+        RunScript(LastMove36, 1);
+        break;
+    case 41:
+        RunScript(HatchMove, 5);
+        RunScript(LastMove41, 1);
+        break;
+    default:
+        break;
+    }
     RunScript(Hatched, 5);
     RunScript(HatchReset, 1);
-    RunScript(BoxOperation2, 1);
-    RunScript(HatchMove, 1);
-    RunScript(LastMove11, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation3, 1);
-    RunScript(HatchMove, 1);
-    RunScript(LastMove11, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation4, 1);
-    RunScript(HatchMove, 1);
-    RunScript(LastMove11, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation5, 1);
-    RunScript(HatchMove, 1);
-    RunScript(LastMove11, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation6, 1);
-    RunScript(HatchMove, 1);
-    RunScript(LastMove11, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation7, 1);
+    switch (num)
+    {
+    case 2:
+        RunScript(BoxOperation2, 1);
+        break;
+    case 3:
+        RunScript(BoxOperation3, 1);
+        break;
+    case 4:
+        RunScript(BoxOperation4, 1);
+        break;
+    case 5:
+        RunScript(BoxOperation5, 1);
+        break;
+    case 6:
+        RunScript(BoxOperation6, 1);
+        break;
+    case 7:
+        RunScript(BoxOperation7, 1);
+    default:
+        break;
+    }
+    num++;
+    LOOP_END
 }
 
-//Â≠µËõã21Âë®Êúü
-void Hatching21()
-{
-    RunScript(BoxOperation1, 1);
-    RunScript(HatchMove, 2);
-    RunScript(LastMove21, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation2, 1);
-    RunScript(HatchMove, 2);
-    RunScript(LastMove21, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation3, 1);
-    RunScript(HatchMove, 2);
-    RunScript(LastMove21, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation4, 1);
-    RunScript(HatchMove, 2);
-    RunScript(LastMove21, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation5, 1);
-    RunScript(HatchMove, 2);
-    RunScript(LastMove21, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation6, 1);
-    RunScript(HatchMove, 2);
-    RunScript(LastMove21, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation7, 1);
-}
-
-//Â≠µËõã31Âë®Êúü
-void Hatching31()
-{
-    RunScript(BoxOperation1, 1);
-    RunScript(HatchMove, 4);
-    RunScript(LastMove31, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation2, 1);
-    RunScript(HatchMove, 4);
-    RunScript(LastMove31, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation3, 1);
-    RunScript(HatchMove, 4);
-    RunScript(LastMove31, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation4, 1);
-    RunScript(HatchMove, 4);
-    RunScript(LastMove31, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation5, 1);
-    RunScript(HatchMove, 4);
-    RunScript(LastMove31, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation6, 1);
-    RunScript(HatchMove, 4);
-    RunScript(LastMove31, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation7, 1);
-}
-
-//Â≠µËõã41Âë®Êúü
-void Hatching41()
-{
-    RunScript(BoxOperation1, 1);
-    RunScript(HatchMove, 5);
-    RunScript(LastMove41, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation2, 1);
-    RunScript(HatchMove, 5);
-    RunScript(LastMove41, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation3, 1);
-    RunScript(HatchMove, 5);
-    RunScript(LastMove41, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation4, 1);
-    RunScript(HatchMove, 5);
-    RunScript(LastMove41, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation5, 1);
-    RunScript(HatchMove, 5);
-    RunScript(LastMove41, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation6, 1);
-    RunScript(HatchMove, 5);
-    RunScript(LastMove41, 1);
-    RunScript(Hatched, 5);
-    RunScript(HatchReset, 1);
-    RunScript(BoxOperation7, 1);
-}
-
-//ÊîæÁîü
+//∑≈…˙
 void Releasing()
 {
     SizeofPgm = SizeofRelease * BoxNum;
@@ -1658,10 +1650,10 @@ void Releasing()
     PROGRAM_END
 }
 
-//Ë∑≥Â∏ß
+//Ã¯÷°
 void Skipping()
 {
-    SizeofPgm = SizeofSkip * (FrameNum + FrameNum / 30) + GetDuration(GotoSettings)  + GetDuration(GotoGame);
+    SizeofPgm = SizeofSkip * (FrameNum + FrameNum / 30) + GetDuration(GotoSettings) + GetDuration(GotoGame);
     RunScript(GotoSettings, 1);
     LOOP_START((FrameNum + FrameNum / 30))
     RunScript(Skip, 1);
@@ -1670,16 +1662,16 @@ void Skipping()
     PROGRAM_END
 }
 
-//Ë∑≥ÊúÄÂêéNÂ∏ß
+//Ã¯◊Ó∫ÛN÷°
 void SkipLastFrame()
 {
     LOOP_START(0)
-    LOOP_START((30/LastFrameNum))
+    LOOP_START((30 / LastFrameNum))
     RunScript(Recruit, 1);
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
     RunScript(GotoGame, 1);
-    LOOP_START((LastFrameNum-1))
+    LOOP_START((LastFrameNum - 1))
     RunScript(NextRecruit, 1);
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
@@ -1691,15 +1683,15 @@ void SkipLastFrame()
     LOOP_END
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
-    if(LastFrameNum==4)
+    if (LastFrameNum == 4)
     {
-    RunScript(Skip, 2);
+        RunScript(Skip, 2);
     }
     RunScript(GotoGame, 1);
     LOOP_END
 }
 
-//Ëá™Âä®È©æÈ©∂
+//◊‘∂Øº› ª
 void Driving()
 {
     LOOP_START(0)
@@ -1751,7 +1743,7 @@ void Driving()
     LOOP_END
 }
 
-//Ë∑≥Èó™Â∏ßÂºÄËΩ¶
+//Ã¯…¡÷°ø™≥µ
 void SkipAndDrive()
 {
     LOOP_START(0)
@@ -1760,7 +1752,7 @@ void SkipAndDrive()
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
     RunScript(GotoGame, 1);
-    LOOP_START((LastFrameNum-1))
+    LOOP_START((LastFrameNum - 1))
     RunScript(NextRecruit, 1);
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
@@ -1818,27 +1810,27 @@ void SkipAndDrive()
     LOOP_END
 }
 
-//‰∏çÂ∏∏Áî®ÂäüËÉΩ
+//≤ª≥£”√π¶ƒ‹
 void InfUsed()
 {
     switch (InfUsedNum)
     {
-    case 1: //ËøûA
+    case 1: //¡¨A
         PressA();
         break;
-    case 2: //Âà∑Áì¶Áâπ
+    case 2: //À¢ÕﬂÃÿ
         CollectWatt();
         break;
-    case 3: //Âà∑Ê†ëÊûú
+    case 3: //À¢ ˜π˚
         CollectBerry();
         break;
-    case 4: //Âà∑Â§¥È•∞
+    case 4: //À¢Õ∑ Œ
         HeadwearBattle();
         break;
-    case 5: //ÂÆùÂèØÂ∏ÆÂ∏ÆÂøô
+    case 5: //±¶ø…∞Ô∞Ô√¶
         PokeJob();
         break;
-    case 6: //Ê¥õÊâòÂßÜÊäΩÂ•ñ
+    case 6: //¬ÂÕ–ƒ∑≥ÈΩ±
         LuckDraw();
         break;
     default:
@@ -1846,7 +1838,7 @@ void InfUsed()
     }
 }
 
-//ËøûA
+//¡¨A
 void PressA()
 {
     LOOP_START(0)
@@ -1855,7 +1847,7 @@ void PressA()
     LOOP_END
 }
 
-//Âà∑Áì¶Áâπ
+//À¢ÕﬂÃÿ
 void CollectWatt()
 {
     LOOP_START(0)
@@ -1866,7 +1858,7 @@ void CollectWatt()
     LOOP_END
 }
 
-//Âà∑Ê†ëÊûú
+//À¢ ˜π˚
 void CollectBerry()
 {
     LOOP_START(0)
@@ -1890,13 +1882,17 @@ void CollectBerry()
     RunStep(PAUSE, 50);
     RunStep(B, 2);
     RunStep(PAUSE, 50);
+    RunStep(B, 2);
+    RunStep(PAUSE, 50);
+    RunStep(B, 2);
+    RunStep(PAUSE, 50);
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
     RunScript(GotoGame, 1);
     LOOP_END
 }
 
-//Âà∑Â§¥È•∞()
+//À¢Õ∑ Œ()
 void HeadwearBattle()
 {
     LOOP_START(0)
@@ -1913,28 +1909,28 @@ void HeadwearBattle()
     RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
     RunScript(GotoGame, 1);
-LOOP_END
+    LOOP_END
 }
 
-//ÂÆùÂèØÂ∏ÆÂ∏ÆÂøô
+//±¶ø…∞Ô∞Ô√¶
 void PokeJob()
 {
-    RunScript(RefreshJob,1);
+    RunScript(RefreshJob, 1);
     LOOP_START(0)
     LOOP_START(15)
-    RunScript(StartJob,1);
-    RunScript(GotoSettings,1);
+    RunScript(StartJob, 1);
+    RunScript(GotoSettings, 1);
     RunScript(Skip, 2);
-    RunScript(GotoGame,1);
-    RunScript(EndJob,1);
+    RunScript(GotoGame, 1);
+    RunScript(EndJob, 1);
     LOOP_END
-    RunScript(GotoSettings,1);
+    RunScript(GotoSettings, 1);
     RunScript(Skip, 1);
-    RunScript(GotoGame,1);
+    RunScript(GotoGame, 1);
     LOOP_END
 }
 
-//Ê¥õÊâòÂßÜÊäΩÂ•ñ
+//¬ÂÕ–ƒ∑≥ÈΩ±
 void LuckDraw()
 {
     LOOP_START(0)
