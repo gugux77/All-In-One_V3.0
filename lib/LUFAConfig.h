@@ -1,4 +1,3 @@
-
 // LUFA Library Configuration Header File. Used to configure LUFA's compile time options, as an alternative to the compile-time defines.
 #ifndef _LUFA_CONFIG_H_
 #define _LUFA_CONFIG_H_

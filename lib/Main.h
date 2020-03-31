@@ -30,7 +30,7 @@ extern char STOP;
 #define flip_bit(r, b) ((r) ^= (1u << (b)))
 
 #define LOOP_START(x)               \
-  for (int i = 0; i < x || !x; i++) \
+  for (long i = 0; i < x || !x; i++) \
   {
 #define LOOP_END \
   if (Stopping)  \
@@ -113,14 +113,11 @@ typedef enum
   UPRIGHT,
   DOWNLEFT,
   DOWNRIGHT,
-  HOLD_UP,   // Hold L Stick UP
-  HOLD_DOWN, // using duration = 0
-  HOLD_LEFT,
-  HOLD_RIGHT,
-  HOLD_CLEAR, // clear Hold L Stick = center
-  HOLD_CAM_L, // Hold R Stick Left
-  HOLD_CAM_R, // Hold R Stick Right
-  HOLD_CAM_C, // clear Hold R Stick = center
+  RLEFT,
+  RRIGHT,
+  //HATLEFT,
+  //HATRIGHT,
+  //HATCENTER,
   X,
   Y,
   A,
