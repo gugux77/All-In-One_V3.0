@@ -27,7 +27,6 @@ extern char STOP;
 #define set_bit(r, b) ((r) |= (1u << (b)))
 #define reset_bit(r, b) ((r) &= ~(1u << (b)))
 #define read_bit(r, b) ((r) & (1u << (b)))
-#define flip_bit(r, b) ((r) ^= (1u << (b)))
 
 #define LOOP_START(x)               \
   for (long i = 0; i < x || !x; i++) \
@@ -36,16 +35,7 @@ extern char STOP;
   if (Stopping)  \
     return;      \
   }
-#define PROGRAM_END            \
-  STOP = 1;                    \
-  OLED_P8x16Str(88, 5, "100"); \
-  OLED_Set_Pos(110, 7);        \
-  OLED_WrDat(0b10011001);      \
-  OLED_Set_Pos(116, 7);        \
-  OLED_WrDat(0b00111100);      \
-  OLED_WrDat(0b00111100);      \
-  OLED_WrDat(0b00111100);      \
-  OLED_WrDat(0b00111100);
+#define PROGRAM_END PgmEnd();
 
 typedef enum
 {
@@ -141,6 +131,10 @@ typedef struct
   uint16_t duration;
 } command;
 
+//void set_bit(char x, char y);
+//void reset_bit(char x, char y);
+//char read_bit(char x, char y);
+void PgmEnd(void);
 void delay(int ms);
 void StopScript(void);
 void SwitchScript(void);
@@ -153,17 +147,23 @@ void RunStep(Buttons_t button, uint16_t duration);
 void RunScript(const command script[], int times);
 void PgmInit(void);
 void ReadEepData(void);
+void WriteEepData(int address,long num);
 void IsRunning(void);
 void SwitchState(void);
 void SwitchBox(void);
 void SwitchCycle(void);
 void SwitchFrame(char x);
+void SwitchCopy(void);
+void SwitchAutoRelease(void);
+void SwitchSpeed(void);
 void SwitchLastFrame(void);
 void SwitchSkipWait(void);
 void SwitchDriveWait(void);
 void SwitchPassword(char x);
+void SwitchAdd(void);
 void SwitchInfUsed(void);
-void NumToStr(int num, char str[]);
+void SwitchLockMode(void);
+//void NumToStr(int num, char str[]);
 void RefreshProgress(void);
 long GetDuration(const command script[]);
 // Function Prototypes
