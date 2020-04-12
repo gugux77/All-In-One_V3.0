@@ -13,17 +13,18 @@ extern char SkipMode;
 extern char SpeedUp;
 extern char LockMode;
 extern char AutoRelease;
-extern int CopyNum;
+extern long CopyNum;
 extern long SizeofSync;
 extern long SizeofCollect;
-extern long SizeofHatch6;
-extern long SizeofHatch11;
-extern long SizeofHatch16;
-extern long SizeofHatch21;
-extern long SizeofHatch26;
-extern long SizeofHatch31;
-extern long SizeofHatch36;
-extern long SizeofHatch41;
+extern long SizeofHatch;
+//extern long SizeofHatch6;
+//extern long SizeofHatch11;
+//extern long SizeofHatch16;
+//extern long SizeofHatch21;
+//extern long SizeofHatch26;
+//extern long SizeofHatch31;
+//extern long SizeofHatch36;
+//extern long SizeofHatch41;
 extern long SizeofRelease;
 //extern long SizeofSkip;
 //extern long SizeofSkipFast;
@@ -37,6 +38,7 @@ void Collecting(void);
 void Hatching(void);
 void HatchOperation(void);
 void Releasing(void);
+void ReleaseOperation(void);
 void Skipping(void);
 void SkipLastFrame(void);
 void Driving(void);
@@ -56,6 +58,28 @@ void PokeJob(void);
 /////////////////////////模块区/////////////////////////
 
 //持续时间40约等于1秒
+
+//打开盒子
+static const command OpenBox[] PROGMEM = {
+    {X, 2},
+    {PAUSE, 50},
+    {A, 2},
+    {PAUSE, 80},
+    {R, 2},
+    {PAUSE, 100},
+    {SCRIPT_END, 0},
+};
+
+//关闭盒子
+static const command CloseBox[] PROGMEM = {
+    {B, 2},
+    {PAUSE, 80},
+    {B, 2},
+    {PAUSE, 80},
+    {B, 2},
+    {PAUSE, 80},
+    {SCRIPT_END, 0},
+};
 
 //取蛋移动
 static const command CollectMove[] PROGMEM = {
@@ -335,12 +359,6 @@ static const command Hatched[] PROGMEM = {
 
 //盒子操作1
 static const command BoxOperation1[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {Y, 2},
     {PAUSE, 5},
     {Y, 2},
@@ -357,23 +375,11 @@ static const command BoxOperation1[] PROGMEM = {
     {PAUSE, 5},
     {A, 2},
     {PAUSE, 10},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
 //盒子操作2
 static const command BoxOperation2[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
@@ -412,23 +418,11 @@ static const command BoxOperation2[] PROGMEM = {
     {PAUSE, 5},
     {A, 2},
     {PAUSE, 10},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
 //盒子操作3
 static const command BoxOperation3[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
@@ -471,23 +465,11 @@ static const command BoxOperation3[] PROGMEM = {
     {PAUSE, 5},
     {A, 2},
     {PAUSE, 10},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
 //盒子操作4
 static const command BoxOperation4[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
@@ -532,23 +514,11 @@ static const command BoxOperation4[] PROGMEM = {
     {PAUSE, 5},
     {A, 2},
     {PAUSE, 10},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
 //盒子操作5
 static const command BoxOperation5[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
@@ -591,23 +561,11 @@ static const command BoxOperation5[] PROGMEM = {
     {PAUSE, 5},
     {A, 2},
     {PAUSE, 10},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
 //盒子操作6
 static const command BoxOperation6[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
@@ -646,23 +604,11 @@ static const command BoxOperation6[] PROGMEM = {
     {PAUSE, 5},
     {A, 2},
     {PAUSE, 10},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
 //盒子操作7
 static const command BoxOperation7[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {LEFT, 2},
     {PAUSE, 5},
     {DOWN, 2},
@@ -687,12 +633,6 @@ static const command BoxOperation7[] PROGMEM = {
     {PAUSE, 10},
     {R, 2},
     {PAUSE, 30},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
@@ -1243,12 +1183,6 @@ static const command CopyGetEgg[] PROGMEM = {
 
 //复制放生
 static const command CopyRelease[] PROGMEM = {
-    {X, 2},
-    {PAUSE, 50},
-    {A, 2},
-    {PAUSE, 80},
-    {R, 2},
-    {PAUSE, 100},
     {A, 2},
     {PAUSE, 20},
     {DOWN, 2},
@@ -1267,12 +1201,6 @@ static const command CopyRelease[] PROGMEM = {
     {PAUSE, 60},
     {A, 2},
     {PAUSE, 20},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
-    {B, 2},
-    {PAUSE, 80},
     {SCRIPT_END, 0},
 };
 
@@ -1603,33 +1531,33 @@ void CollectAndHatch()
     switch (CycleNum)
     {
     case 6:
-        SizeofPgm = SizeofHatch6 * BoxNum;
+        SizeofPgm = GetDuration(LastMove6) * BoxNum;
         break;
     case 11:
-        SizeofPgm = SizeofHatch11 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 6 + GetDuration(LastMove11) * 6) * BoxNum;
         break;
     case 16:
-        SizeofPgm = SizeofHatch16 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 12 + GetDuration(LastMove16) * 6) * BoxNum;
         break;
     case 21:
-        SizeofPgm = SizeofHatch21 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 12 + GetDuration(LastMove21) * 6) * BoxNum;
         break;
     case 26:
-        SizeofPgm = SizeofHatch26 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 18 + GetDuration(LastMove26) * 6) * BoxNum;
         break;
     case 31:
-        SizeofPgm = SizeofHatch31 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 24 + GetDuration(LastMove31) * 6) * BoxNum;
         break;
     case 36:
-        SizeofPgm = SizeofHatch36 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 24 + GetDuration(LastMove36) * 6) * BoxNum;
         break;
     case 41:
-        SizeofPgm = SizeofHatch41 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 30 + GetDuration(LastMove41) * 6) * BoxNum;
         break;
     default:
         break;
     }
-    SizeofPgm += SizeofCollect * BoxNum * 43 + GetDuration(CollectToHatch) + 10;
+    SizeofPgm += (SizeofHatch + SizeofCollect * 43) * BoxNum + GetDuration(CollectToHatch) + 10;
     //取蛋 成功率约70%
     LOOP_START((BoxNum * 43))
     RunScript(CollectMove, 3);
@@ -1684,33 +1612,33 @@ void Hatching()
     switch (CycleNum)
     {
     case 6:
-        SizeofPgm = SizeofHatch6 * BoxNum;
+        SizeofPgm = GetDuration(LastMove6) * BoxNum;
         break;
     case 11:
-        SizeofPgm = SizeofHatch11 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 6 + GetDuration(LastMove11) * 6) * BoxNum;
         break;
     case 16:
-        SizeofPgm = SizeofHatch16 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 12 + GetDuration(LastMove16) * 6) * BoxNum;
         break;
     case 21:
-        SizeofPgm = SizeofHatch21 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 12 + GetDuration(LastMove21) * 6) * BoxNum;
         break;
     case 26:
-        SizeofPgm = SizeofHatch26 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 18 + GetDuration(LastMove26) * 6) * BoxNum;
         break;
     case 31:
-        SizeofPgm = SizeofHatch31 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 24 + GetDuration(LastMove31) * 6) * BoxNum;
         break;
     case 36:
-        SizeofPgm = SizeofHatch36 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 24 + GetDuration(LastMove36) * 6) * BoxNum;
         break;
     case 41:
-        SizeofPgm = SizeofHatch41 * BoxNum;
+        SizeofPgm = (GetDuration(HatchMove) * 30 + GetDuration(LastMove41) * 6) * BoxNum;
         break;
     default:
         break;
     }
-    SizeofPgm += 10;
+    SizeofPgm += SizeofHatch * BoxNum + 10;
     RunStep(DOWNLEFT, 10);
     LOOP_START(BoxNum)
     HatchOperation();
@@ -1722,7 +1650,9 @@ void Hatching()
 void HatchOperation()
 {
     char num = 2;
+    RunScript(OpenBox, 1);
     RunScript(BoxOperation1, 1);
+    RunScript(CloseBox, 1);
     LOOP_START(6)
     switch (CycleNum)
     {
@@ -1762,6 +1692,7 @@ void HatchOperation()
     }
     RunScript(Hatched, 5);
     RunScript(HatchReset, 1);
+    RunScript(OpenBox, 1);
     switch (num)
     {
     case 2:
@@ -1784,6 +1715,7 @@ void HatchOperation()
     default:
         break;
     }
+    RunScript(CloseBox, 1);
     num++;
     LOOP_END
 }
@@ -1794,6 +1726,14 @@ void Releasing()
     SizeofPgm = SizeofSync + SizeofRelease * BoxNum;
     RunScript(Sync, 5);
     LOOP_START(BoxNum)
+    ReleaseOperation();
+    LOOP_END
+    PROGRAM_END
+}
+
+//放生操作
+void ReleaseOperation()
+{
     RunScript(ReleaseDown, 4);
     RunScript(ReleaseRight, 1);
     RunScript(ReleaseUP, 4);
@@ -1806,8 +1746,6 @@ void Releasing()
     RunScript(ReleaseRight, 1);
     RunScript(ReleaseUP, 4);
     RunScript(ReleaseReset, 1);
-    LOOP_END
-    PROGRAM_END
 }
 
 //跳帧
@@ -1955,15 +1893,30 @@ void Driving()
 //复制道具
 void Copying()
 {
-    if (AutoRelease)
-        SizeofPgm = (SizeofCopy + GetDuration(CopyRelease)) * (CopyNum * 10 / 7);
+    if (AutoRelease == 1)
+        SizeofPgm = (SizeofCopy + GetDuration(CopyRelease) + GetDuration(OpenBox) + GetDuration(CloseBox)) * (CopyNum * 43 / 30);
+    else if (AutoRelease == 2)
+        SizeofPgm = SizeofCopy * (CopyNum * 43 / 30) + (SizeofRelease + GetDuration(OpenBox) + GetDuration(CloseBox)) * (CopyNum * 43 / 30 / 86);
     else
-        SizeofPgm = SizeofCopy * (CopyNum * 10 / 7);
-    LOOP_START((CopyNum * 10 / 7))
+        SizeofPgm = SizeofCopy * (CopyNum * 43 / 30);
+    int num = 0;
+    LOOP_START((CopyNum * 43 / 30))
+    num++;
     RunScript(CollectMove, 3);
     RunScript(CopyGetEgg, 1);
-    if (AutoRelease)
+    if (AutoRelease == 1)
+    {
+        RunScript(OpenBox, 1);
         RunScript(CopyRelease, 1);
+        RunScript(CloseBox, 1);
+    }
+    if (AutoRelease == 2 && num >= 86)
+    {
+        RunScript(OpenBox, 1);
+        ReleaseOperation();
+        RunScript(CloseBox, 1);
+        num = 0;
+    }
     LOOP_END
     PROGRAM_END
 }
