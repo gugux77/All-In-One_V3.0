@@ -1509,7 +1509,7 @@ void PressButton()
       {
         delay(100);
         PlusButton = 1;
-        SwitchButton(66);
+        SwitchButton(6);
         //SwitchButton(4);
         PlusButton = 0;
       }
