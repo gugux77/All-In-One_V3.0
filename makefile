@@ -10,7 +10,8 @@
 # --------------------------------------
 
 # Run "make help" for target help.
- 
+
+SHELL=C:/Windows/System32/cmd.exe
 MCU = atmega32u4
 ARCH         = AVR8
 F_CPU        = 16000000
